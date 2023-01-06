@@ -94,7 +94,12 @@ const App = () => {
         .update(person.id, personObject)
         .then(updatedPerson => {
           const copy = [...persons]
-          copy[person.id - 1].number = newNumber
+          for (let p in copy) {
+            if (copy[p].name === person.name) {
+              copy[p].number = newNumber
+              break
+            }
+          }
           setPersons(copy)
           setMessage(`Updated ${updatedPerson.name}`)
           setTimeout(() => {
@@ -104,7 +109,7 @@ const App = () => {
           setNewNumber('')
         })
         .catch(error => {
-          setError(`Information of ${person.name} has already been removed from the server`)
+          setError(error.response.data.error)
           setTimeout(() => {
             setError(null)
           }, 5000)
@@ -126,6 +131,12 @@ const App = () => {
           setNewName('')
           setNewNumber('')
         })
+        .catch(error => {
+          setError(error.response.data.error)
+          setTimeout(() => {
+            setError(null)
+          }, 5000)
+        })
     }
   }
   const removePerson = (event) => {
@@ -137,7 +148,12 @@ const App = () => {
       .remove(event.target.id)
       .then(removedPerson => {
         const copy = [...persons]
-        copy.splice(event.target.id - 1, 1);
+        for (let person in copy) {
+          if (copy[person].id === event.target.id) {
+            copy.splice(parseInt(person), 1)
+            break
+          }
+        }
         setPersons(copy)
         setMessage(`Removed person successfully`)
         setTimeout(() => {
